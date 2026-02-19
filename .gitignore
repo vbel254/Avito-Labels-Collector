@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+
+# Dependency folders
+node_modules/
+
+# Logs / temp
+*.log
+*.tmp

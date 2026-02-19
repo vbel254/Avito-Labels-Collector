@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Этикетки Авито</title>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --card: #ffffff;
+      --text: #1f1f1f;
+      --muted: #6f6f6f;
+      --border: #e0e0e0;
+      --accent: #0b7a5a;
+      --accent-hover: #0a6e52;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .container {
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .toolbar .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .legal-note {
+      margin: -4px 0 12px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    button {
+      padding: 10px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button.secondary:hover {
+      background: #f0f0f0;
+    }
+
+    #results {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .order-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .order-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .order-info {
+      font-size: 12px;
+      margin: 4px 0;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .order-info strong {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .barcode-wrap {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+      background: #fafafa;
+      text-align: center;
+    }
+
+    .barcode-wrap img,
+    .barcode-wrap svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      image-rendering: crisp-edges;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    @media print {
+      @page {
+        margin: 0;
+      }
+
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+
+      .toolbar {
+        display: none;
+      }
+
+      .legal-note {
+        display: none;
+      }
+
+      .container {
+        max-width: none;
+        margin: 0;
+        padding: 8px;
+      }
+
+      .order-card {
+        border: 1px solid #ddd;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <button id="printBtn">Скачать PDF / Печать</button>
+      <button id="refreshBtn" class="secondary">Обновить</button>
+      <div id="meta" class="meta"></div>
+    </div>
+    <div class="legal-note">Неофициальный инструмент, не аффилирован с Авито.</div>
+    <div id="results"></div>
+  </div>
+
+  <script src="vendor/code128.js"></script>
+  <script src="vendor/qrcode.js"></script>
+  <script src="print.js"></script>
+</body>
+</html>

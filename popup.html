@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сборщик этикеток Авито</title>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --card: #ffffff;
+      --text: #1f1f1f;
+      --muted: #6f6f6f;
+      --border: #e0e0e0;
+      --accent: #0b7a5a;
+      --accent-hover: #0a6e52;
+      --danger: #b42318;
+      --warn: #8a5300;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 12px 12px 52px;
+      width: 390px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      position: relative;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+
+    .legal-note {
+      font-size: 10px;
+      color: var(--muted);
+      margin: -6px 0 10px;
+      line-height: 1.3;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button:disabled {
+      background: #b8b8b8;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: #f0f0f0;
+    }
+
+    #status {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: none;
+    }
+
+    #status.loading {
+      display: block;
+      background: #fff4d6;
+      color: var(--warn);
+    }
+
+    #status.success {
+      display: block;
+      background: #e9f7ef;
+      color: #1b5e3c;
+    }
+
+    #status.error {
+      display: block;
+      background: #fdecec;
+      color: var(--danger);
+    }
+
+    #results {
+      margin-top: 12px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .order-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .order-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .order-info {
+      font-size: 12px;
+      margin: 4px 0;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .order-info strong {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .barcode-wrap {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      background: #fafafa;
+      text-align: center;
+    }
+
+    .barcode-wrap img,
+    .barcode-wrap svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      image-rendering: crisp-edges;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .popup-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      height: 36px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid var(--border);
+      background: #f3f3f3;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .popup-footer-text {
+      width: 100%;
+      min-width: 0;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .popup-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .popup-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">Сборщик этикеток Авито</div>
+  <div class="subtitle">Собирает заказы со статусом «Отправьте заказ» на текущей странице</div>
+  <div class="legal-note">Неофициальный инструмент, не аффилирован с Авито.</div>
+  <div id="lastRun" class="subtitle"></div>
+
+  <div class="actions">
+    <button id="collectBtn">Собрать этикетки</button>
+    <button id="resetBtn" class="secondary">Сбросить результаты</button>
+    <button id="printBtn" class="secondary">Открыть для печати</button>
+  </div>
+  <div id="status"></div>
+  <div id="results"></div>
+  <footer class="popup-footer">
+    <div class="popup-footer-text">
+      Автор: <a href="https://voolee.tech" target="_blank" rel="noopener noreferrer">voolee</a> · Поддержать разработчика:
+      <a href="https://boosty.to/voolee/donate" target="_blank" rel="noopener noreferrer" title="Поддержать автора донатом">Boosty</a>
+    </div>
+  </footer>
+
+  <script src="vendor/code128.js"></script>
+  <script src="vendor/qrcode.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
